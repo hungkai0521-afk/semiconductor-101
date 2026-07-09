@@ -219,6 +219,26 @@
       <p>電容的工作,就是<strong>先把電「存起來」,需要時再瞬間倒出去</strong>——很像一個水桶,平常裝水,要用的時候一次沖出來。
       桶子越大 → 能存的水(電)越多。半導體工程師畢生都在想同一件事:<strong>怎麼在指甲蓋大的晶片上,塞進一個「容量夠大」的水桶?</strong></p>
     </div>
+
+    <!-- why it is needed -->
+    <div style="background:linear-gradient(135deg,#fff1f2,#fff7ed);border:1px solid #fecaca;border-radius:18px;padding:22px 24px;margin:24px 0">
+      <div style="font-weight:850;color:#be123c;font-size:16px;margin-bottom:8px">💡 為什麼「非它不可」?先講重點</div>
+      <p style="color:#7f1d2b;font-size:16px;margin:0 0 16px">
+        有些晶片同時要兩件<strong style="color:#9f1239">互相矛盾</strong>的事:<strong style="color:#9f1239">①存很多電、②只能佔超小的面積</strong>。
+        一般平面電容只能二選一,<strong style="color:#9f1239">DTC 是唯一兩個都給得起的解法</strong>。不用它會出兩個大問題:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px">
+        <div style="background:#fff;border:1px solid #fecdd3;border-radius:14px;padding:16px 18px">
+          <div style="font-weight:800;color:#1a2436;font-size:15px;margin-bottom:6px">🧠 記憶體會「卡住做不下去」</div>
+          <p style="margin:0;color:#4a5568;font-size:14.5px;line-height:1.75">每格記憶=1 電晶體+1 電容。晶片越小,留給電容的面積越小 → 存的電太少 → <strong style="color:#1a2436">電漏光、資料記不住、一直出錯</strong>。要在更小面積存一樣多的電,只能往下挖。</p>
+        </div>
+        <div style="background:#fff;border:1px solid #fecdd3;border-radius:14px;padding:16px 18px">
+          <div style="font-weight:800;color:#1a2436;font-size:15px;margin-bottom:6px">⚡ AI 晶片會「餵不飽電當機」</div>
+          <p style="margin:0;color:#4a5568;font-size:14.5px;line-height:1.75">GPU 瞬間開關幾百億顆電晶體,電壓會抖,抖太大就算錯當機。要在晶片旁的<strong style="color:#1a2436">極小空間</strong>塞夠多電容當緩衝,只有密度超高的 DTC 塞得下。</p>
+        </div>
+      </div>
+      <p style="color:#7f1d2b;font-size:14.5px;margin:16px 0 0">
+        👉 所以 DTC 不是「比較高級、用爽的電容」,而是<strong style="color:#9f1239">記憶體微縮和 AI 供電這兩條路,少了它就走不下去</strong>。</p>
+    </div>
   </section>
 
   <!-- 2 -->
@@ -259,6 +279,60 @@
       </svg>
       <figcaption>同樣一小塊晶片面積,把電容「往下挖成很多條深溝」,可用的儲電表面積就大幅增加。</figcaption>
     </figure>
+
+    <h3 style="font-size:18px;font-weight:800;margin:30px 0 6px;color:var(--ink)">🛠️ 等等,硬硬的晶片是怎麼「挖」下去的?</h3>
+    <p>不是用鑽頭鑽,而是靠一種工法叫 <strong>蝕刻(Etching)</strong>——用<strong>帶電的氣體(電漿)</strong>把矽「一點一點啃掉」。三個步驟:</p>
+    <p>
+      ① <strong>先鋪保護罩</strong>:在晶片表面蓋一層保護膜,只在「要挖洞的位置」留下小孔。<br>
+      ② <strong>用電漿去轟</strong>:噴帶電氣體,像化學版的噴砂——<span class="hl-amber">露出來的矽被啃掉,被蓋住的地方不動</span>。<br>
+      ③ <strong>往下鑽</strong>:氣體沿著小孔一路往下啃,鑽出又深又直的溝。
+    </p>
+
+    <figure>
+      <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="蝕刻挖出深溝槽示意圖">
+        <!-- plasma arrows -->
+        <g stroke="#0ea5e9" stroke-width="2.5" marker-end="url(#arrow)">
+          <line x1="150" y1="20" x2="150" y2="70"/>
+          <line x1="280" y1="20" x2="280" y2="70"/>
+          <line x1="440" y1="20" x2="440" y2="70"/>
+          <line x1="570" y1="20" x2="570" y2="70"/>
+        </g>
+        <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#0ea5e9"/></marker></defs>
+        <text x="360" y="14" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0284c7">↓ 電漿氣體往下轟(化學噴砂)</text>
+        <!-- mask layer -->
+        <g fill="#7c3aed">
+          <rect x="40" y="78" width="90" height="16" rx="3"/>
+          <rect x="170" y="78" width="90" height="16" rx="3"/>
+          <rect x="300" y="78" width="90" height="16" rx="3"/>
+          <rect x="460" y="78" width="90" height="16" rx="3"/>
+          <rect x="590" y="78" width="90" height="16" rx="3"/>
+        </g>
+        <!-- silicon with trenches carved where mask has gaps -->
+        <path d="M40 94 L680 94 L680 230 L40 230 Z" fill="#eef2fb" stroke="#d6e0f5"/>
+        <g fill="#fff">
+          <rect x="132" y="94" width="36" height="120" rx="2"/>
+          <rect x="262" y="94" width="36" height="120" rx="2"/>
+          <rect x="392" y="94" width="66" height="120" rx="2"/>
+          <rect x="552" y="94" width="36" height="120" rx="2"/>
+        </g>
+        <g fill="#94a9d6" opacity="0.5">
+          <rect x="132" y="94" width="36" height="120" rx="2" fill="none" stroke="#b7c4e0" stroke-dasharray="3 3"/>
+          <rect x="262" y="94" width="36" height="120" rx="2" fill="none" stroke="#b7c4e0" stroke-dasharray="3 3"/>
+          <rect x="392" y="94" width="66" height="120" rx="2" fill="none" stroke="#b7c4e0" stroke-dasharray="3 3"/>
+          <rect x="552" y="94" width="36" height="120" rx="2" fill="none" stroke="#b7c4e0" stroke-dasharray="3 3"/>
+        </g>
+        <text x="86" y="160" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3aed">保護罩</text>
+        <text x="86" y="176" text-anchor="middle" font-size="10.5" fill="#8a97b0">(蓋住=不被啃)</text>
+        <text x="360" y="244" text-anchor="middle" font-size="12" fill="#4a5568">紫色=保護罩,只在空隙處讓電漿往下啃 → 白色就是被挖出來的深溝</text>
+      </svg>
+      <figcaption>🎨 就像「酸蝕刻印章 / 鏤空模板噴漆」:酸只咬得到露出線條的地方。晶片蝕刻同樣道理,只是把酸換成電漿氣體,精度到奈米,而且筆直往下鑽。</figcaption>
+    </figure>
+
+    <div class="analogy">
+      <div class="tag">🙅 兩個常見誤會,先破除</div>
+      <p><strong>1. 挖的是「地基」不是「房子」:</strong>往下挖的是晶片最底層那塊厚厚的矽基底(像大樓的地基石板),只用掉很淺一層;電晶體那些「房子」在別的地方,不會被挖壞。</p>
+      <p style="margin-top:10px"><strong>2. 挖完只是空洞,要「粉刷牆壁」才變電容:</strong>挖出深洞只是第一步(空的地下室)。接著在洞的<strong>內壁</strong>刷上三明治層(導電層→絕緣層→導電層),深洞的牆壁才變成電容——洞越深、牆越高、面積越大、存的電越多。</p>
+    </div>
   </section>
 
   <!-- 3 -->
