@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTC 深溝槽電容 ｜ 半導體小白也看得懂</title>
+<meta name="description" content="用生活比喻,把台積電的深溝槽電容(Deep Trench Capacitor, DTC)講給完全不懂半導體的人聽。">
+<style>
+  :root{
+    --bg:#0b1020;
+    --bg-soft:#111a33;
+    --paper:#ffffff;
+    --ink:#1a2436;
+    --ink-soft:#4a5568;
+    --line:#e3e8f0;
+    --blue:#2563eb;
+    --sky:#0ea5e9;
+    --teal:#14b8a6;
+    --amber:#f59e0b;
+    --amber-soft:#fff7e6;
+    --amber-line:#f5d182;
+    --violet:#7c3aed;
+    --rose:#e11d48;
+    --shadow:0 10px 30px rgba(16,30,60,.10);
+    --shadow-lg:0 24px 60px rgba(16,30,60,.16);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--ink);
+    background:#f4f7fc;
+    line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
+
+  /* ---------- top nav ---------- */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(244,247,252,.82);
+    backdrop-filter:saturate(160%) blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex;align-items:center;gap:14px;height:54px;overflow-x:auto;scrollbar-width:none}
+  nav .wrap::-webkit-scrollbar{display:none}
+  nav .brand{font-weight:800;color:var(--ink);white-space:nowrap;font-size:15px}
+  nav .brand span{color:var(--blue)}
+  nav a{color:var(--ink-soft);text-decoration:none;font-size:13.5px;white-space:nowrap;font-weight:600;transition:color .15s}
+  nav a:hover{color:var(--blue)}
+
+  /* ---------- hero ---------- */
+  header.hero{
+    position:relative;overflow:hidden;
+    background:radial-gradient(1200px 600px at 80% -10%,#1e2f5c 0%,var(--bg) 55%);
+    color:#eaf0ff;padding:64px 0 76px;
+  }
+  header.hero::after{
+    content:"";position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(120,150,255,.06) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(120,150,255,.06) 1px,transparent 1px);
+    background-size:34px 34px;
+    -webkit-mask-image:radial-gradient(700px 400px at 75% 0%,#000,transparent 75%);
+            mask-image:radial-gradient(700px 400px at 75% 0%,#000,transparent 75%);
+    pointer-events:none;
+  }
+  .hero .wrap{position:relative;z-index:1}
+  .series-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(120,150,255,.14);border:1px solid rgba(120,150,255,.3);
+    color:#bcd0ff;font-size:13px;font-weight:700;
+    padding:6px 14px;border-radius:999px;margin-bottom:22px;
+  }
+  .series-badge b{color:#fff}
+  header.hero h1{font-size:clamp(30px,6vw,46px);line-height:1.2;font-weight:900;letter-spacing:-.5px;color:#fff}
+  header.hero h1 .en{display:block;font-size:clamp(14px,3vw,18px);font-weight:600;color:#8fb0ff;letter-spacing:1px;margin-top:10px}
+  header.hero .lede{margin-top:20px;font-size:clamp(16px,2.6vw,18px);color:#c3cfe8;max-width:620px}
+  .hero-chips{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
+  .hero-chips span{
+    font-size:13px;font-weight:600;color:#dbe6ff;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+    padding:7px 13px;border-radius:10px;
+  }
+
+  /* ---------- sections ---------- */
+  main{padding:8px 0 40px}
+  section{padding:40px 0;border-bottom:1px solid var(--line)}
+  section:last-child{border-bottom:none}
+  .kicker{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .kicker .num{
+    flex:none;width:34px;height:34px;border-radius:10px;
+    display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff;
+    background:linear-gradient(135deg,var(--blue),var(--sky));
+    box-shadow:0 6px 16px rgba(37,99,235,.35);
+  }
+  .kicker h2{font-size:clamp(21px,4vw,27px);font-weight:850;letter-spacing:-.3px;line-height:1.3}
+  section p{color:var(--ink-soft);font-size:16.5px;margin:14px 0}
+  section p strong{color:var(--ink);font-weight:700}
+  .hl{background:linear-gradient(transparent 62%,#bfe0ff 62%);padding:0 2px;font-weight:700;color:var(--ink)}
+  .hl-amber{background:linear-gradient(transparent 62%,#ffe0a3 62%);padding:0 2px;font-weight:700;color:var(--ink)}
+
+  /* analogy card */
+  .analogy{
+    background:var(--amber-soft);border:1px solid var(--amber-line);
+    border-radius:16px;padding:20px 22px;margin:22px 0;position:relative;
+  }
+  .analogy .tag{display:inline-flex;align-items:center;gap:7px;font-weight:800;color:#b45309;font-size:14px;margin-bottom:6px}
+  .analogy p{color:#7c4a12;margin:6px 0 0;font-size:16px}
+  .analogy p strong{color:#92400e}
+
+  /* figure */
+  figure{margin:26px 0;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:22px 18px 16px;box-shadow:var(--shadow)}
+  figure svg{width:100%;height:auto;display:block}
+  figcaption{text-align:center;color:var(--ink-soft);font-size:13.5px;margin-top:12px;line-height:1.6}
+
+  /* comparison table */
+  .table-scroll{overflow-x:auto;margin:22px 0;border-radius:16px;box-shadow:var(--shadow)}
+  table{width:100%;border-collapse:collapse;background:var(--paper);min-width:520px}
+  th,td{padding:14px 16px;text-align:left;font-size:15px;border-bottom:1px solid var(--line)}
+  thead th{background:#f0f5ff;color:var(--ink);font-weight:800;font-size:14px}
+  tbody th{font-weight:700;color:var(--ink);background:#fafcff;width:34%}
+  td{color:var(--ink-soft)}
+  .win{color:var(--teal);font-weight:800}
+  .lose{color:var(--rose);font-weight:700}
+
+  /* use-case grid */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:22px 0}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s}
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+  .card .ic{font-size:26px;margin-bottom:8px}
+  .card h3{font-size:16.5px;margin-bottom:6px;font-weight:800}
+  .card p{font-size:14.5px;margin:0;color:var(--ink-soft)}
+
+  /* stat pills */
+  .stats{display:flex;flex-wrap:wrap;gap:14px;margin:22px 0}
+  .stat{flex:1;min-width:150px;background:linear-gradient(135deg,#12203f,#1a2f5c);color:#fff;border-radius:16px;padding:18px 20px}
+  .stat b{display:block;font-size:26px;font-weight:900;color:#7fb2ff;line-height:1.1}
+  .stat span{font-size:13px;color:#b9c6e6}
+
+  /* patent callout */
+  .patent{
+    background:linear-gradient(135deg,#eef4ff,#f7fbff);border:1px solid #cfe0ff;
+    border-radius:18px;padding:22px 24px;margin:22px 0;
+  }
+  .patent .top{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .patent .top .pill{background:var(--blue);color:#fff;font-size:12px;font-weight:800;padding:3px 10px;border-radius:6px}
+  .patent .top b{font-size:15px}
+  .patent p{margin:8px 0}
+  .patent a{color:var(--blue);font-weight:700;text-decoration:none;border-bottom:1px solid rgba(37,99,235,.35)}
+
+  /* glossary */
+  .gloss{display:grid;gap:12px;margin:20px 0}
+  .gloss .row{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
+  .gloss .row b{color:var(--blue);font-size:15.5px}
+  .gloss .row .en{color:var(--ink-soft);font-size:13px;font-weight:600}
+  .gloss .row p{margin:6px 0 0;font-size:15px;color:var(--ink-soft)}
+
+  /* tldr */
+  .tldr{background:var(--bg);color:#e7eeff;border-radius:20px;padding:30px 26px;margin:6px 0}
+  .tldr h2{color:#fff;font-size:22px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .tldr ul{list-style:none;display:grid;gap:12px}
+  .tldr li{display:flex;gap:12px;font-size:16px;color:#cdd8f2;align-items:flex-start}
+  .tldr li::before{content:"✓";flex:none;width:24px;height:24px;border-radius:7px;background:rgba(20,184,166,.2);color:#5eead4;display:grid;place-items:center;font-weight:900;font-size:13px;margin-top:3px}
+  .tldr li b{color:#fff}
+
+  footer{padding:34px 0 60px;text-align:center;color:var(--ink-soft);font-size:13.5px}
+  footer a{color:var(--blue);text-decoration:none}
+  footer .disc{margin-top:12px;font-size:12px;color:#9aa7bd;max-width:620px;margin-left:auto;margin-right:auto}
+
+  @media(max-width:600px){
+    section{padding:32px 0}
+    tbody th{width:40%}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">🔬 半導體<span>小白也看得懂</span></div>
+    <a href="#what">是什麼</a>
+    <a href="#why">為何挖深</a>
+    <a href="#how">長什麼樣</a>
+    <a href="#vs">比一比</a>
+    <a href="#use">用在哪</a>
+    <a href="#patent">台積電專利</a>
+    <a href="#tldr">懶人包</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="series-badge">📚 系列 <b>第 01 篇</b> ・ 深入淺出半導體</div>
+    <h1>DTC 深溝槽電容
+      <span class="en">Deep Trench Capacitor</span>
+    </h1>
+    <p class="lede">工程師說它能讓晶片「更省空間、更穩、更快」——可是它到底是什麼?
+    這篇不用任何理工背景,用<b style="color:#fff">水塔、地下停車場、鐵軌伸縮縫</b>就講給你聽。</p>
+    <div class="hero-chips">
+      <span>⏱️ 約 6 分鐘</span>
+      <span>🎯 零基礎友善</span>
+      <span>🏭 含台積電專利解讀</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 1 -->
+  <section id="what">
+    <div class="kicker"><div class="num">1</div><h2>先講結論:DTC 是什麼?</h2></div>
+    <p>DTC 的全名是 <strong>Deep Trench Capacitor,深溝槽電容</strong>。拆開看只有兩個重點:</p>
+    <p>👉 它是一顆<span class="hl">電容</span>(一個會「存電」的小零件),但它不是平躺在晶片上,而是像挖井一樣<span class="hl-amber">往矽晶片裡「垂直挖一條深溝」</span>做出來的。</p>
+
+    <div class="analogy">
+      <div class="tag">🪣 生活比喻:電容 = 水桶</div>
+      <p>電容的工作,就是<strong>先把電「存起來」,需要時再瞬間倒出去</strong>——很像一個水桶,平常裝水,要用的時候一次沖出來。
+      桶子越大 → 能存的水(電)越多。半導體工程師畢生都在想同一件事:<strong>怎麼在指甲蓋大的晶片上,塞進一個「容量夠大」的水桶?</strong></p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="why">
+    <div class="kicker"><div class="num">2</div><h2>為什麼要「往下挖深溝」?</h2></div>
+    <p>電容能存多少電,主要看它的<strong>表面積</strong>——面積越大,存得越多。問題是晶片的<strong>桌面(平面面積)非常貴又非常擠</strong>,不可能給你一大塊地。</p>
+    <p>於是工程師想了一招:<span class="hl">既然平面不夠鋪,那就往地底下挖!</span></p>
+
+    <div class="analogy">
+      <div class="tag">🅿️ 生活比喻:平面停車場 vs 地下停車場</div>
+      <p>同樣一塊地,<strong>平面停車場</strong>只能停一排車;但如果往下挖成<strong>地下 5 層停車場</strong>,佔地一樣,車位卻多好幾倍。
+      DTC 就是電容界的「地下停車場」——<strong>佔用的晶片桌面一樣小,但因為溝挖得又深又直,內壁攤開來的表面積暴增</strong>,能存的電就多很多。</p>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="平面電容與深溝槽電容表面積比較圖">
+        <!-- left: planar -->
+        <text x="120" y="28" text-anchor="middle" font-size="15" font-weight="800" fill="#1a2436">平面電容</text>
+        <text x="120" y="46" text-anchor="middle" font-size="12" fill="#e11d48" font-weight="700">表面積小 = 存電少</text>
+        <rect x="40" y="120" width="160" height="90" rx="4" fill="#e8eefc" stroke="#c7d6f5"/>
+        <rect x="40" y="108" width="160" height="14" rx="3" fill="#2563eb"/>
+        <text x="120" y="235" text-anchor="middle" font-size="11.5" fill="#4a5568">只有頂上一層平面在存電</text>
+        <!-- divider -->
+        <line x1="360" y1="70" x2="360" y2="220" stroke="#e3e8f0" stroke-dasharray="4 5"/>
+        <!-- right: trench -->
+        <text x="560" y="28" text-anchor="middle" font-size="15" font-weight="800" fill="#1a2436">深溝槽電容 (DTC)</text>
+        <text x="560" y="46" text-anchor="middle" font-size="12" fill="#14b8a6" font-weight="700">同樣寬度,表面積暴增</text>
+        <rect x="440" y="70" width="240" height="150" rx="4" fill="#e8eefc" stroke="#c7d6f5"/>
+        <!-- trenches -->
+        <g fill="#2563eb">
+          <rect x="462" y="70" width="16" height="140" rx="3"/>
+          <rect x="500" y="70" width="16" height="140" rx="3"/>
+          <rect x="538" y="70" width="16" height="140" rx="3"/>
+          <rect x="576" y="70" width="16" height="140" rx="3"/>
+          <rect x="614" y="70" width="16" height="140" rx="3"/>
+        </g>
+        <text x="560" y="235" text-anchor="middle" font-size="11.5" fill="#4a5568">每條深溝的內壁都在存電 → 面積 ×N 倍</text>
+      </svg>
+      <figcaption>同樣一小塊晶片面積,把電容「往下挖成很多條深溝」,可用的儲電表面積就大幅增加。</figcaption>
+    </figure>
+  </section>
+
+  <!-- 3 -->
+  <section id="how">
+    <div class="kicker"><div class="num">3</div><h2>DTC 剖開來長什麼樣?</h2></div>
+    <p>把一條深溝橫切開來看,其實就是一個「<strong>三明治</strong>」結構,由內而外三層:</p>
+    <p>🥪 <strong>兩片會導電的電極</strong>(像三明治的兩片吐司),中間夾一層<strong>不導電的絕緣層</strong>(叫「介電層」,像中間的餡料)。
+    電就是被「困」在這層薄薄的介電層兩側——這正是電容能存電的祕密。</p>
+
+    <figure>
+      <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="深溝槽電容剖面結構圖">
+        <!-- substrate -->
+        <rect x="40" y="30" width="640" height="240" rx="8" fill="#eef2fb" stroke="#d6e0f5"/>
+        <text x="60" y="255" font-size="12.5" fill="#8a97b0">矽晶片基底 (Silicon Substrate)</text>
+        <!-- one deep trench, cross-section -->
+        <!-- outer electrode -->
+        <path d="M250 40 L250 220 Q250 240 270 240 L450 240 Q470 240 470 220 L470 40 L440 40 L440 210 Q440 214 436 214 L284 214 Q280 214 280 210 L280 40 Z" fill="#2563eb"/>
+        <!-- dielectric -->
+        <path d="M280 40 L280 210 Q280 214 284 214 L436 214 Q440 214 440 210 L440 40 L420 40 L420 200 L300 200 L300 40 Z" fill="#f59e0b"/>
+        <!-- inner electrode -->
+        <rect x="300" y="40" width="120" height="160" fill="#0ea5e9"/>
+        <!-- labels with leader lines -->
+        <g font-size="13" font-weight="700">
+          <line x1="230" y1="120" x2="262" y2="120" stroke="#2563eb" stroke-width="2"/>
+          <text x="80" y="118" fill="#2563eb">外電極</text>
+          <text x="80" y="135" font-size="11" font-weight="600" fill="#7d8bad">導電・存電 (−)</text>
+
+          <line x1="640" y1="90" x2="428" y2="90" stroke="#f59e0b" stroke-width="2"/>
+          <text x="560" y="82" fill="#b45309">介電層</text>
+          <text x="512" y="100" font-size="11" font-weight="600" fill="#a9741f">不導電的絕緣薄膜(餡料)</text>
+
+          <line x1="490" y1="160" x2="418" y2="160" stroke="#0ea5e9" stroke-width="2"/>
+          <text x="500" y="156" fill="#0284c7">內電極</text>
+          <text x="500" y="174" font-size="11" font-weight="600" fill="#3a9fd1">導電・存電 (+)</text>
+        </g>
+        <text x="360" y="290" text-anchor="middle" font-size="12.5" fill="#4a5568">一條深溝的橫切面:電極 → 介電層 → 電極,像三明治一樣層層包覆</text>
+      </svg>
+      <figcaption>藍色/水藍色是兩片「導電電極」,中間橘色是「介電層(絕緣)」。電荷就存在介電層兩側,溝挖得越深、這個三明治越長,存的電越多。</figcaption>
+    </figure>
+
+    <div class="stats">
+      <div class="stat"><b>~20×</b><span>電容密度可達傳統平面 MIM 電容的約 20 倍</span></div>
+      <div class="stat"><b>1100 nF/mm²</b><span>台積電先進封裝內嵌 eDTC 可達到的電容密度等級</span></div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="vs">
+    <div class="kicker"><div class="num">4</div><h2>和其他電容比一比</h2></div>
+    <p>記憶體(DRAM)界主要有兩種做法:<strong>往下挖的「深溝槽」</strong>和<strong>往上疊的「堆疊式」</strong>。沒有絕對好壞,是取捨:</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>比較項目</th><th>深溝槽電容 DTC(往下挖)</th><th>堆疊式電容(往上疊)</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>省不省晶片桌面</th><td class="win">很省,藏在地底</td><td>疊在電晶體上方</td></tr>
+          <tr><th>對電晶體的影響</th><td class="win">先做電容再做電晶體,幾乎不干擾</td><td class="lose">後做,高溫製程會影響電晶體</td></tr>
+          <tr><th>製造難度</th><td class="lose">要挖又深又直的溝,很難</td><td class="win">深寬比較小,相對好做</td></tr>
+          <tr><th>誰在用</th><td>台積電(封裝)、南亞科、華邦、早期奇夢達</td><td>三星、美光、SK 海力士(主流 DRAM)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:14.5px">📌 小提醒:「往下挖最省地」聽起來完美,但<strong>挖一條又深又細又筆直的溝</strong>在製程上非常困難——這也是後面台積電專利要解決的痛點之一。</p>
+  </section>
+
+  <!-- 5 -->
+  <section id="use">
+    <div class="kicker"><div class="num">5</div><h2>DTC 到底用在哪裡?</h2></div>
+    <p>你手邊的手機、電腦、AI 伺服器裡都可能有它。三個最常見的角色:</p>
+    <div class="cards">
+      <div class="card">
+        <div class="ic">🧠</div>
+        <h3>記憶體 DRAM</h3>
+        <p>每一個記憶單元(bit)都需要一顆小電容來記住「0 或 1」。深溝槽讓電容藏在地下,記憶體就能做得更密、容量更大。</p>
+      </div>
+      <div class="card">
+        <div class="ic">⚡</div>
+        <h3>先進封裝的「電源穩定器」</h3>
+        <p>AI 晶片(如台積電 CoWoS 封裝)超耗電,電壓一抖就當機。把 DTC 當<strong>去耦電容</strong>貼在晶片旁邊,像穩壓水塔隨時補電,讓供電穩又快。</p>
+      </div>
+      <div class="card">
+        <div class="ic">📻</div>
+        <h3>訊號濾波 (PLL)</h3>
+        <p>在時脈/頻率電路裡當濾波元件,幫忙把雜訊濾掉,讓晶片的「節拍器」走得更準。</p>
+      </div>
+    </div>
+
+    <div class="analogy">
+      <div class="tag">💧 生活比喻:去耦電容 = 屋頂水塔</div>
+      <p>大樓用水尖峰時,如果只靠水管直送,水壓會忽大忽小。<strong>在頂樓放一座水塔</strong>,尖峰時先放水塔的水頂著,水壓就穩了。
+      DTC 貼在耗電的 AI 晶片旁邊,就是那座「電力水塔」——晶片瞬間狂吃電時,先由它就近補上,電壓才不會塌。</p>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="patent">
+    <div class="kicker"><div class="num">6</div><h2>那台積電這個專利在解決什麼?</h2></div>
+    <div class="patent">
+      <div class="top">
+        <span class="pill">專利</span>
+        <b>TW202125701A ／ 台灣積體電路製造(TSMC)</b>
+      </div>
+      <p style="color:#3a4a66;font-size:15px;margin-top:4px">
+        名稱:積體電路、半導體結構,及溝槽電容的形成方法 ・ 公開日 2021/07/01
+        ・ <a href="https://patents.google.com/patent/TW202125701A/zh" target="_blank" rel="noopener">看原始專利 →</a>
+      </p>
+    </div>
+
+    <p><strong>痛點:</strong>當我們把溝槽挖得越來越密、塞得越來越滿,晶片運作時會發熱。組成電容的那些金屬與介電材料<span class="hl-amber">一受熱就會膨脹</span>,而它們被牢牢卡在硬邦邦的矽基底裡,膨脹沒地方去,就會把基底「撐」到<strong>翹曲、龜裂、甚至爆開</strong>。</p>
+
+    <p><strong>台積電的解法:</strong>把溝槽之間的<span class="hl">柱子做成上寬下窄的「錐形」</span>,刻意在溝槽裡留下一點點<strong>空腔(air gap)</strong>。這樣材料受熱要膨脹時,就有一個「緩衝空間」可以伸展,不會硬撐到基底裂開。</p>
+
+    <div class="analogy">
+      <div class="tag">🛤️ 生活比喻:鐵軌與橋樑的「伸縮縫」</div>
+      <p>你有沒有注意過,鐵軌或大橋的接縫處總會<strong>留一道縫</strong>?那不是偷工減料,而是故意的——因為金屬夏天受熱會膨脹,<strong>沒留縫的話軌道就會拱起變形</strong>。
+      台積電在溝槽裡留的那個小空腔,就是晶片版的「伸縮縫」:<strong>先留好膨脹的空間,材料熱脹時就不會把晶片撐裂。</strong></p>
+    </div>
+
+    <figure>
+      <svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="錐形柱狀結構留空腔緩衝熱膨脹示意圖">
+        <rect x="40" y="30" width="640" height="220" rx="8" fill="#eef2fb" stroke="#d6e0f5"/>
+        <!-- tapered pillars: wide top narrow bottom -->
+        <g fill="#94a9d6">
+          <path d="M120 40 L156 40 L146 230 L130 230 Z"/>
+          <path d="M250 40 L286 40 L276 230 L260 230 Z"/>
+          <path d="M380 40 L416 40 L406 230 L390 230 Z"/>
+          <path d="M510 40 L546 40 L536 230 L520 230 Z"/>
+        </g>
+        <!-- trenches filled (capacitor) between pillars, wider at bottom -> cavity -->
+        <g fill="#2563eb" opacity="0.9">
+          <path d="M156 40 L250 40 L260 230 L146 230 Z" opacity="0.18"/>
+        </g>
+        <!-- cavity markers -->
+        <g>
+          <ellipse cx="203" cy="205" rx="26" ry="13" fill="#fff7e6" stroke="#f5b942" stroke-width="1.5"/>
+          <ellipse cx="333" cy="205" rx="26" ry="13" fill="#fff7e6" stroke="#f5b942" stroke-width="1.5"/>
+          <ellipse cx="463" cy="205" rx="26" ry="13" fill="#fff7e6" stroke="#f5b942" stroke-width="1.5"/>
+        </g>
+        <text x="203" y="209" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b45309">空腔</text>
+        <!-- annotations -->
+        <text x="600" y="60" font-size="12.5" font-weight="700" fill="#3a4a66">柱子上寬</text>
+        <text x="600" y="78" font-size="11" fill="#7d8bad">↑ w1</text>
+        <text x="600" y="220" font-size="12.5" font-weight="700" fill="#3a4a66">下窄</text>
+        <text x="600" y="238" font-size="11" fill="#7d8bad">↓ w2</text>
+        <line x1="596" y1="66" x2="556" y2="66" stroke="#94a9d6" stroke-width="1.5"/>
+        <line x1="596" y1="226" x2="540" y2="226" stroke="#94a9d6" stroke-width="1.5"/>
+        <text x="360" y="272" text-anchor="middle" font-size="12.5" fill="#4a5568">上寬下窄的錐形柱 → 底部自然留出「空腔」→ 材料受熱有地方膨脹,基底不裂</text>
+      </svg>
+      <figcaption>灰色是上寬下窄的錐形柱子,黃色橢圓是刻意保留的空腔(伸縮縫)。這就是這件專利的核心巧思。</figcaption>
+    </figure>
+  </section>
+
+  <!-- glossary -->
+  <section id="gloss">
+    <div class="kicker"><div class="num">7</div><h2>名詞小卡(隨手查)</h2></div>
+    <div class="gloss">
+      <div class="row"><b>電容 <span class="en">Capacitor</span></b><p>會「存電、放電」的零件。半導體裡到處都是,像小水桶。</p></div>
+      <div class="row"><b>深溝槽電容 <span class="en">DTC / Deep Trench Capacitor</span></b><p>往矽晶片裡垂直挖深溝做成的電容,超省桌面、電容量大。</p></div>
+      <div class="row"><b>介電層 <span class="en">Dielectric</span></b><p>電極中間那層「不導電的薄膜」,是電容能存電的關鍵夾層。</p></div>
+      <div class="row"><b>去耦電容 <span class="en">Decoupling Capacitor</span></b><p>貼在晶片旁的「電力水塔」,穩定供電、抵抗電壓瞬間波動。</p></div>
+      <div class="row"><b>深寬比 <span class="en">Aspect Ratio</span></b><p>溝有多深 ÷ 有多寬。越深越窄越難做,是 DTC 的製程難點。</p></div>
+      <div class="row"><b>CoWoS</b><p>台積電的先進封裝技術,常把 DTC 內嵌進去穩定 AI 晶片供電。</p></div>
+    </div>
+  </section>
+
+  <!-- tldr -->
+  <section id="tldr">
+    <div class="tldr">
+      <h2>🎁 30 秒懶人包</h2>
+      <ul>
+        <li><span><b>DTC = 深溝槽電容</b>:一顆「往地下挖深溝」做出來的儲電零件。</span></li>
+        <li><span>為什麼挖深?因為<b>晶片桌面很貴</b>,往下挖就能用一樣小的面積換到大很多的儲電表面積(像地下停車場)。</span></li>
+        <li><span>結構是<b>電極—介電層—電極的三明治</b>,溝越深存的電越多。</span></li>
+        <li><span>用途:<b>DRAM 記憶體、AI 晶片的電源穩定(去耦)、訊號濾波</b>。</span></li>
+        <li><span>台積電專利的巧思:把柱子做成<b>上寬下窄留空腔</b>,當「伸縮縫」吸收熱膨脹,避免晶片被撐裂。</span></li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>《半導體小白也看得懂》系列 ・ 第 01 篇:DTC 深溝槽電容</p>
+    <p style="margin-top:6px">資料來源:<a href="https://patents.google.com/patent/TW202125701A/zh" target="_blank" rel="noopener">TSMC 專利 TW202125701A</a> ・ WikiChip ・ 公開技術文獻</p>
+    <p class="disc">本頁為教育科普用途,為了讓非工程背景讀者理解,部分比喻(水桶、停車場、伸縮縫)為簡化示意,與真實製程/物理細節會有差異,細節請以原始專利與學術文獻為準。</p>
+  </div>
+</footer>
+
+</body>
+</html>
